@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Timers;
+using System.Text.RegularExpressions;
 
 namespace v2rayN.Forms
 {
@@ -20,6 +21,7 @@ namespace v2rayN.Forms
         private V2rayHandler v2rayHandler;
         private List<int> lvSelecteds = new List<int>();
         private StatisticsHandler statistics = null;
+        private string MsgFilter = string.Empty;
 
         #region Window 事件
 
@@ -34,21 +36,20 @@ namespace v2rayN.Forms
 
             Application.ApplicationExit += (sender, args) =>
             {
-                v2rayHandler.V2rayStop();
-
-                //HttpProxyHandle.CloseHttpAgent(config);
-                HttpProxyHandle.UpdateSysProxy(config, true);
-
-                ConfigHandler.SaveConfig(ref config);
-                statistics?.SaveToFile();
-                statistics?.Close();
+                MyAppExit(false);
             };
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            ConfigHandler.LoadConfig(ref config);
+            if (ConfigHandler.LoadConfig(ref config) != 0)
+            {
+                UI.ShowWarning($"Loading GUI configuration file is abnormal,please restart the application{Environment.NewLine}加载GUI配置文件异常,请重启应用");
+                Environment.Exit(0);
+                return;
+            }
             ConfigHandler.InitBuiltinRouting(ref config);
+            MainFormHandler.Instance.BackupGuiNConfig(config, true);
             v2rayHandler = new V2rayHandler();
             v2rayHandler.ProcessEvent += v2rayHandler_ProcessEvent;
 
@@ -56,6 +57,7 @@ namespace v2rayN.Forms
             {
                 statistics = new StatisticsHandler(config, UpdateStatisticsHandler);
             }
+            MainFormHandler.Instance.UpdateTask(config, UpdateTaskHandler);
         }
 
         private void MainForm_VisibleChanged(object sender, EventArgs e)
@@ -86,12 +88,21 @@ namespace v2rayN.Forms
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            switch (e.CloseReason)
             {
-                StorageUI();
-                e.Cancel = true;
-                HideForm();
-                return;
+                case CloseReason.UserClosing:
+                    StorageUI();
+                    e.Cancel = true;
+                    HideForm();
+                    break;
+                case CloseReason.ApplicationExitCall:
+                case CloseReason.FormOwnerClosing:
+                case CloseReason.TaskManagerClosing:
+                    MyAppExit(false);
+                    break;
+                case CloseReason.WindowsShutDown:
+                    MyAppExit(true);
+                    break;
             }
         }
 
@@ -106,26 +117,28 @@ namespace v2rayN.Forms
 
             //}
         }
+        private void MyAppExit(bool blWindowsShutDown)
+        {
+            try
+            {
+                v2rayHandler.V2rayStop();
 
+                //HttpProxyHandle.CloseHttpAgent(config);
+                if (blWindowsShutDown)
+                {
+                    HttpProxyHandle.ResetIEProxy4WindowsShutDown();
+                }
+                else
+                {
+                    HttpProxyHandle.UpdateSysProxy(config, true);
+                }
 
-        //private const int WM_QUERYENDSESSION = 0x0011;
-        //protected override void WndProc(ref Message m)
-        //{
-        //    switch (m.Msg)
-        //    {
-        //        case WM_QUERYENDSESSION:
-        //            Utils.SaveLog("Windows shutdown UnsetProxy");
-
-        //            ConfigHandler.ToJsonFile(config);
-        //            statistics?.SaveToFile();
-        //            ProxySetting.UnsetProxy();
-        //            m.Result = (IntPtr)1;
-        //            break;
-        //        default:
-        //            base.WndProc(ref m);
-        //            break;
-        //    }
-        //}
+                ConfigHandler.SaveConfig(ref config);
+                statistics?.SaveToFile();
+                statistics?.Close();
+            }
+            catch { }
+        }
 
         private void RestoreUI()
         {
@@ -190,6 +203,7 @@ namespace v2rayN.Forms
             lvServers.Columns.Add(UIRes.I18N("LvPort"), 50);
             lvServers.Columns.Add(UIRes.I18N("LvEncryptionMethod"), 90);
             lvServers.Columns.Add(UIRes.I18N("LvTransportProtocol"), 70);
+            lvServers.Columns.Add(UIRes.I18N("LvTLS"), 70);
             lvServers.Columns.Add(UIRes.I18N("LvSubscription"), 50);
             lvServers.Columns.Add(UIRes.I18N("LvTestResults"), 70, HorizontalAlignment.Right);
 
@@ -246,6 +260,7 @@ namespace v2rayN.Forms
                 Utils.AddSubItem(lvItem, EServerColName.port.ToString(), item.port.ToString());
                 Utils.AddSubItem(lvItem, EServerColName.security.ToString(), item.security);
                 Utils.AddSubItem(lvItem, EServerColName.network.ToString(), item.network);
+                Utils.AddSubItem(lvItem, EServerColName.streamSecurity.ToString(), item.streamSecurity);
                 Utils.AddSubItem(lvItem, EServerColName.subRemarks.ToString(), item.getSubRemarks(config));
                 Utils.AddSubItem(lvItem, EServerColName.testResult.ToString(), item.testResult);
                 if (stats)
@@ -284,25 +299,56 @@ namespace v2rayN.Forms
         private void RefreshServersMenu()
         {
             menuServers.DropDownItems.Clear();
+            menuServers2.SelectedIndexChanged -= MenuServers2_SelectedIndexChanged;
+            menuServers2.Items.Clear();
+            menuServers.Visible = false;
+            menuServers2.Visible = false;
 
-            List<ToolStripMenuItem> lst = new List<ToolStripMenuItem>();
-            for (int k = 0; k < config.vmess.Count; k++)
+            if (config.vmess.Count > 20)
             {
-                VmessItem item = config.vmess[k];
-                string name = item.getSummary();
+                for (int k = 0; k < config.vmess.Count; k++)
+                {
+                    VmessItem item = config.vmess[k];
+                    string name = item.getSummary();
 
-                ToolStripMenuItem ts = new ToolStripMenuItem(name)
-                {
-                    Tag = k
-                };
-                if (config.index.Equals(k))
-                {
-                    ts.Checked = true;
+                    if (config.index.Equals(k))
+                    {
+                        name = $"√ {name}";
+                    }
+                    menuServers2.Items.Add(name);
+
                 }
-                ts.Click += new EventHandler(ts_Click);
-                lst.Add(ts);
+                menuServers2.SelectedIndex = config.index;
+                menuServers2.SelectedIndexChanged += MenuServers2_SelectedIndexChanged;
+                menuServers2.Visible = true;
             }
-            menuServers.DropDownItems.AddRange(lst.ToArray());
+            else
+            {
+                List<ToolStripMenuItem> lst = new List<ToolStripMenuItem>();
+                for (int k = 0; k < config.vmess.Count; k++)
+                {
+                    VmessItem item = config.vmess[k];
+                    string name = item.getSummary();
+
+                    ToolStripMenuItem ts = new ToolStripMenuItem(name)
+                    {
+                        Tag = k
+                    };
+                    if (config.index.Equals(k))
+                    {
+                        ts.Checked = true;
+                    }
+                    ts.Click += new EventHandler(ts_Click);
+                    lst.Add(ts);
+                }
+                menuServers.DropDownItems.AddRange(lst.ToArray());
+                menuServers.Visible = true;
+            }
+        }
+
+        private void MenuServers2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetDefaultServer(((ToolStripComboBox)sender).SelectedIndex);
         }
 
         private void ts_Click(object sender, EventArgs e)
@@ -340,8 +386,8 @@ namespace v2rayN.Forms
 
         private void DisplayToolStatus()
         {
-            toolSslSocksPort.Text = $"{Global.Loopback}:{config.inbound[0].localPort}";
-            toolSslHttpPort.Text = $"{Global.Loopback}:{Global.httpPort}";
+            toolSslInboundInfo.Text = $"{Global.InboundSocks} {Global.Loopback}:{config.inbound[0].localPort} | "
+             + $"{ Global.InboundHttp} { Global.Loopback}:{Global.httpPort}";
 
             notifyMain.Icon = MainFormHandler.Instance.GetNotifyIcon(config, this.Icon);
         }
@@ -568,24 +614,18 @@ namespace v2rayN.Forms
             {
                 return;
             }
-            for (int k = lvSelecteds.Count - 1; k >= 0; k--)
-            {
-                ConfigHandler.RemoveServer(ref config, lvSelecteds[k]);
-            }
+
+            ConfigHandler.RemoveServer(ref config, lvSelecteds);
+
             RefreshServers();
             LoadV2ray();
-
         }
 
         private void menuRemoveDuplicateServer_Click(object sender, EventArgs e)
         {
-            Utils.DedupServerList(config.vmess, out List<VmessItem> servers, config.keepOlderDedupl);
             int oldCount = config.vmess.Count;
-            int newCount = servers.Count;
-            if (servers != null)
-            {
-                config.vmess = servers;
-            }
+            ConfigHandler.DedupServerList(ref config);
+            int newCount = config.vmess.Count;
             RefreshServers();
             LoadV2ray();
             UI.Show(string.Format(UIRes.I18N("RemoveDuplicateServerResult"), oldCount, newCount));
@@ -679,7 +719,8 @@ namespace v2rayN.Forms
 
         private void tsbTestMe_Click(object sender, EventArgs e)
         {
-            string result = httpProxyTest() + "ms";
+            SpeedtestHandler statistics = new SpeedtestHandler(ref config);
+            string result = statistics.RunAvailabilityCheck() + "ms";
             AppendText(false, string.Format(UIRes.I18N("TestMeOutput"), result));
         }
 
@@ -689,12 +730,6 @@ namespace v2rayN.Forms
             {
                 statistics.ClearAllServerStatistics();
             }
-        }
-
-        private int httpProxyTest()
-        {
-            SpeedtestHandler statistics = new SpeedtestHandler(ref config, ref v2rayHandler, lvSelecteds, "", UpdateSpeedtestHandler);
-            return statistics.RunAvailabilityCheck();
         }
 
         private void menuExport2ClientConfig_Click(object sender, EventArgs e)
@@ -912,6 +947,10 @@ namespace v2rayN.Forms
             UpdateSubscriptionProcess();
         }
 
+        private void tsbBackupGuiNConfig_Click(object sender, EventArgs e)
+        {
+            MainFormHandler.Instance.BackupGuiNConfig(config);
+        }
         #endregion
 
 
@@ -951,6 +990,13 @@ namespace v2rayN.Forms
             }
             else
             {
+                if (!Utils.IsNullOrEmpty(MsgFilter))
+                {
+                    if (!Regex.IsMatch(text, MsgFilter))
+                    {
+                        return;
+                    }
+                }
                 //this.txtMsgBox.AppendText(text);
                 ShowMsg(text);
             }
@@ -978,7 +1024,10 @@ namespace v2rayN.Forms
         /// </summary>
         private void ClearMsg()
         {
-            this.txtMsgBox.Clear();
+            txtMsgBox.Invoke((Action)delegate
+            {
+                txtMsgBox.Clear();
+            });
         }
 
         /// <summary>
@@ -1105,6 +1154,15 @@ namespace v2rayN.Forms
             }
         }
 
+        private void UpdateTaskHandler(bool success, string msg)
+        {
+            AppendText(false, msg);
+            if (success)
+            {
+                Global.reloadV2ray = true;
+                LoadV2ray();
+            }
+        }
         #endregion
 
         #region 移动服务器
@@ -1201,88 +1259,17 @@ namespace v2rayN.Forms
 
         #region CheckUpdate
 
-        private void askToDownload(DownloadHandle downloadHandle, string url)
-        {
-            if (UI.ShowYesNo(string.Format(UIRes.I18N("DownloadYesNo"), url)) == DialogResult.Yes)
-            {
-                if (httpProxyTest() > 0)
-                {
-                    int httpPort = config.GetLocalPort(Global.InboundHttp);
-                    WebProxy webProxy = new WebProxy(Global.Loopback, httpPort);
-                    downloadHandle.DownloadFileAsync(url, webProxy, 600);
-                }
-                else
-                {
-                    downloadHandle.DownloadFileAsync(url, null, 600);
-                }
-            }
-        }
         private void tsbCheckUpdateN_Click(object sender, EventArgs e)
         {
-            //System.Diagnostics.Process.Start(Global.UpdateUrl);
-            DownloadHandle downloadHandle = null;
-            if (downloadHandle == null)
+            void _updateUI(bool success, string msg)
             {
-                downloadHandle = new DownloadHandle();
-                downloadHandle.AbsoluteCompleted += (sender2, args) =>
+                AppendText(false, msg);
+                if (success)
                 {
-                    if (args.Success)
-                    {
-                        AppendText(false, string.Format(UIRes.I18N("MsgParsingSuccessfully"), "v2rayN"));
-
-                        string url = args.Msg;
-                        this.Invoke((MethodInvoker)(delegate
-                        {
-                            askToDownload(downloadHandle, url);
-                        }));
-                    }
-                    else
-                    {
-                        AppendText(false, args.Msg);
-                    }
-                };
-                downloadHandle.UpdateCompleted += (sender2, args) =>
-                {
-                    if (args.Success)
-                    {
-                        AppendText(false, UIRes.I18N("MsgDownloadV2rayCoreSuccessfully"));
-
-                        try
-                        {
-                            string fileName = Utils.GetPath(downloadHandle.DownloadFileName);
-                            Process process = new Process
-                            {
-                                StartInfo = new ProcessStartInfo
-                                {
-                                    FileName = "v2rayUpgrade.exe",
-                                    Arguments = "\"" + fileName + "\"",
-                                    WorkingDirectory = Utils.StartupPath()
-                                }
-                            };
-                            process.Start();
-                            if (process.Id > 0)
-                            {
-                                menuExit_Click(null, null);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            AppendText(false, ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        AppendText(false, args.Msg);
-                    }
-                };
-                downloadHandle.Error += (sender2, args) =>
-                {
-                    AppendText(true, args.GetException().Message);
-                };
-            }
-
-            AppendText(false, string.Format(UIRes.I18N("MsgStartUpdating"), "v2rayN"));
-            downloadHandle.CheckUpdateAsync("v2rayN");
+                    menuExit_Click(null, null);
+                }
+            };
+            (new UpdateHandle()).CheckUpdateGuiN(config, _updateUI);
         }
 
         private void tsbCheckUpdateCore_Click(object sender, EventArgs e)
@@ -1297,67 +1284,51 @@ namespace v2rayN.Forms
 
         private void CheckUpdateCore(string type)
         {
-            DownloadHandle downloadHandle = null;
-            if (downloadHandle == null)
+            void _updateUI(bool success, string msg)
             {
-                downloadHandle = new DownloadHandle();
-                downloadHandle.AbsoluteCompleted += (sender2, args) =>
+                AppendText(false, msg);
+                if (success)
                 {
-                    if (args.Success)
-                    {
-                        AppendText(false, string.Format(UIRes.I18N("MsgParsingSuccessfully"), "Core"));
+                    CloseV2ray();
 
-                        string url = args.Msg;
-                        this.Invoke((MethodInvoker)(delegate
-                        {
-                            askToDownload(downloadHandle, url);
-                        }));
-                    }
-                    else
-                    {
-                        AppendText(false, args.Msg);
-                    }
-                };
-                downloadHandle.UpdateCompleted += (sender2, args) =>
+                    string fileName = Utils.GetPath(Utils.GetDownloadFileName(msg));
+                    FileManager.ZipExtractToFile(fileName, config.ignoreGeoUpdateCore ? "geo" : "");
+
+                    AppendText(false, UIRes.I18N("MsgUpdateV2rayCoreSuccessfullyMore"));
+
+                    Global.reloadV2ray = true;
+                    LoadV2ray();
+
+                    AppendText(false, UIRes.I18N("MsgUpdateV2rayCoreSuccessfully"));
+                }
+            };
+            (new UpdateHandle()).CheckUpdateCore(type, config, _updateUI);
+        }
+
+        private void tsbCheckUpdateGeoSite_Click(object sender, EventArgs e)
+        {
+            (new UpdateHandle()).UpdateGeoFile("geosite", config, (bool success, string msg) =>
+            {
+                AppendText(false, msg);
+                if (success)
                 {
-                    if (args.Success)
-                    {
-                        AppendText(false, UIRes.I18N("MsgDownloadV2rayCoreSuccessfully"));
-                        AppendText(false, UIRes.I18N("MsgUnpacking"));
+                    Global.reloadV2ray = true;
+                    LoadV2ray();
+                }
+            });
+        }
 
-                        try
-                        {
-                            CloseV2ray();
-
-                            string fileName = downloadHandle.DownloadFileName;
-                            fileName = Utils.GetPath(fileName);
-                            FileManager.ZipExtractToFile(fileName, config.ignoreGeoUpdateCore ? "geo" : "");
-
-                            AppendText(false, UIRes.I18N("MsgUpdateV2rayCoreSuccessfullyMore"));
-
-                            Global.reloadV2ray = true;
-                            LoadV2ray();
-
-                            AppendText(false, UIRes.I18N("MsgUpdateV2rayCoreSuccessfully"));
-                        }
-                        catch (Exception ex)
-                        {
-                            AppendText(false, ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        AppendText(false, args.Msg);
-                    }
-                };
-                downloadHandle.Error += (sender2, args) =>
+        private void tsbCheckUpdateGeoIP_Click(object sender, EventArgs e)
+        {
+            (new UpdateHandle()).UpdateGeoFile("geoip", config, (bool success, string msg) =>
+            {
+                AppendText(false, msg);
+                if (success)
                 {
-                    AppendText(true, args.GetException().Message);
-                };
-            }
-
-            AppendText(false, string.Format(UIRes.I18N("MsgStartUpdating"), "Core"));
-            downloadHandle.CheckUpdateAsync(type);
+                    Global.reloadV2ray = true;
+                    LoadV2ray();
+                }
+            });
         }
         #endregion
 
@@ -1431,15 +1402,16 @@ namespace v2rayN.Forms
         /// </summary>
         private void UpdateSubscriptionProcess()
         {
-            void _updateUI(bool refresh, string msg)
+            void _updateUI(bool success, string msg)
             {
                 AppendText(false, msg);
-                if (refresh)
+                if (success)
                 {
                     RefreshServers();
                 }
             };
-            MainFormHandler.Instance.UpdateSubscriptionProcess(config, _updateUI);            
+
+            (new UpdateHandle()).UpdateSubscriptionProcess(config, _updateUI);
         }
 
         private void tsbQRCodeSwitch_CheckedChanged(object sender, EventArgs e)
@@ -1483,6 +1455,7 @@ namespace v2rayN.Forms
             menuRoutings.Visible = config.enableRoutingAdvanced;
             if (!config.enableRoutingAdvanced)
             {
+                toolSslRoutingRule.Text = string.Empty;
                 return;
             }
 
@@ -1505,6 +1478,7 @@ namespace v2rayN.Forms
                 if (config.routingIndex.Equals(k))
                 {
                     ts.Checked = true;
+                    toolSslRoutingRule.Text = item.remarks;
                 }
                 ts.Click += new EventHandler(ts_Routing_Click);
                 lst.Add(ts);
@@ -1575,7 +1549,16 @@ namespace v2rayN.Forms
             }
 
         }
-
+        private void menuMsgBoxFilter_Click(object sender, EventArgs e)
+        {
+            var fm = new MsgFilterSetForm();
+            fm.MsgFilter = MsgFilter;
+            if (fm.ShowDialog() == DialogResult.OK)
+            {
+                MsgFilter = fm.MsgFilter;
+                gbMsgTitle.Text = string.Format(UIRes.I18N("MsgInformationTitle"), MsgFilter);
+            }
+        }
         #endregion
 
     }

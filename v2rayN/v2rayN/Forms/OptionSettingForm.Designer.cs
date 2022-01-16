@@ -69,6 +69,8 @@
             this.txtKcpmtu = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.txtautoUpdateInterval = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.chkIgnoreGeoUpdateCore = new System.Windows.Forms.CheckBox();
             this.cmbCoreType = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -78,6 +80,11 @@
             this.chkEnableStatistics = new System.Windows.Forms.CheckBox();
             this.chkAllowLANConn = new System.Windows.Forms.CheckBox();
             this.chkAutoRun = new System.Windows.Forms.CheckBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtsystemProxyExceptions = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnOK = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -87,6 +94,8 @@
             this.tabPage2.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.tabPage7.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -104,6 +113,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Controls.Add(this.tabPage3);
             resources.ApplyResources(this.tabControl1, "tabControl1");
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -363,6 +373,8 @@
             // 
             // tabPage7
             // 
+            this.tabPage7.Controls.Add(this.txtautoUpdateInterval);
+            this.tabPage7.Controls.Add(this.label15);
             this.tabPage7.Controls.Add(this.chkIgnoreGeoUpdateCore);
             this.tabPage7.Controls.Add(this.cmbCoreType);
             this.tabPage7.Controls.Add(this.label4);
@@ -375,6 +387,16 @@
             resources.ApplyResources(this.tabPage7, "tabPage7");
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // txtautoUpdateInterval
+            // 
+            resources.ApplyResources(this.txtautoUpdateInterval, "txtautoUpdateInterval");
+            this.txtautoUpdateInterval.Name = "txtautoUpdateInterval";
+            // 
+            // label15
+            // 
+            resources.ApplyResources(this.label15, "label15");
+            this.label15.Name = "label15";
             // 
             // chkIgnoreGeoUpdateCore
             // 
@@ -433,6 +455,37 @@
             this.chkAutoRun.Name = "chkAutoRun";
             this.chkAutoRun.UseVisualStyleBackColor = true;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.groupBox2);
+            resources.ApplyResources(this.tabPage3, "tabPage3");
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.txtsystemProxyExceptions);
+            resources.ApplyResources(this.groupBox2, "groupBox2");
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.TabStop = false;
+            // 
+            // label13
+            // 
+            resources.ApplyResources(this.label13, "label13");
+            this.label13.Name = "label13";
+            // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
+            // 
+            // txtsystemProxyExceptions
+            // 
+            resources.ApplyResources(this.txtsystemProxyExceptions, "txtsystemProxyExceptions");
+            this.txtsystemProxyExceptions.Name = "txtsystemProxyExceptions";
+            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.btnClose);
@@ -473,6 +526,9 @@
             this.tabPage6.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -532,5 +588,12 @@
         private System.Windows.Forms.ComboBox cmbCoreType;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox chkIgnoreGeoUpdateCore;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TextBox txtsystemProxyExceptions;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox txtautoUpdateInterval;
+        private System.Windows.Forms.Label label15;
     }
 }

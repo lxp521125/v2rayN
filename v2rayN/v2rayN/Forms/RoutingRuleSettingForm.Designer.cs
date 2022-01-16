@@ -34,6 +34,10 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnOK = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnBrowse = new System.Windows.Forms.Button();
+            this.txtCustomIcon = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.txtUrl = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -91,12 +95,38 @@
             // panel1
             // 
             resources.ApplyResources(this.panel1, "panel1");
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.btnBrowse);
+            this.panel1.Controls.Add(this.txtCustomIcon);
+            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.txtUrl);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.txtRemarks);
             this.panel1.Controls.Add(this.label2);
             this.panel1.Name = "panel1";
+            // 
+            // label5
+            // 
+            resources.ApplyResources(this.label5, "label5");
+            this.label5.Name = "label5";
+            // 
+            // btnBrowse
+            // 
+            resources.ApplyResources(this.btnBrowse, "btnBrowse");
+            this.btnBrowse.Name = "btnBrowse";
+            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            // 
+            // txtCustomIcon
+            // 
+            resources.ApplyResources(this.txtCustomIcon, "txtCustomIcon");
+            this.txtCustomIcon.Name = "txtCustomIcon";
+            // 
+            // label4
+            // 
+            resources.ApplyResources(this.label4, "label4");
+            this.label4.Name = "label4";
             // 
             // label1
             // 
@@ -319,5 +349,9 @@
         private System.Windows.Forms.TextBox txtUrl;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtCustomIcon;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.Label label5;
     }
 }

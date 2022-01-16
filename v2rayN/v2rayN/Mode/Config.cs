@@ -77,21 +77,6 @@ namespace v2rayN.Mode
         }
 
         /// <summary>
-        /// 自定义服务器下载测速url
-        /// </summary>
-        public string speedTestUrl
-        {
-            get; set;
-        }
-        /// <summary>
-        /// 自定义“服务器真连接延迟”测试url
-        /// </summary>
-        public string speedPingTestUrl
-        {
-            get; set;
-        }
-
-        /// <summary>
         /// 允许来自局域网的连接
         /// </summary>
         public bool allowLANConn
@@ -161,6 +146,10 @@ namespace v2rayN.Mode
         {
             get; set;
         }
+        public string domainMatcher
+        {
+            get; set;
+        }
         public int routingIndex
         {
             get; set;
@@ -183,6 +172,23 @@ namespace v2rayN.Mode
             get; set;
         }
 
+        /// <summary>
+        /// systemProxyExceptions
+        /// </summary>
+        public string systemProxyExceptions
+        {
+            get; set;
+        }
+
+        public int autoUpdateInterval
+        {
+            get; set;
+        } = 0;
+
+        public ConstItem constItem
+        {
+            get; set;
+        }
         #region 函数
 
         public string address()
@@ -353,6 +359,21 @@ namespace v2rayN.Mode
                 return string.Empty;
             }
             return vmess[index].sni.TrimEx();
+        }
+        public List<string> alpn()
+        {
+            if (index < 0)
+            {
+                return null;
+            }
+            if (vmess[index].alpn != null && vmess[index].alpn.Count > 0)
+            {
+                return vmess[index].alpn;
+            }
+            else
+            {
+                return null;
+            }
         }
         #endregion
 
@@ -533,7 +554,7 @@ namespace v2rayN.Mode
         }
 
         /// <summary>
-        /// 底层传输安全
+        /// 传输层安全
         /// </summary>
         public string streamSecurity
         {
@@ -584,6 +605,13 @@ namespace v2rayN.Mode
         /// tls sni
         /// </summary>
         public string sni
+        {
+            get; set;
+        }
+        /// <summary>
+        /// tls alpn
+        /// </summary>
+        public List<string> alpn
         {
             get; set;
         }
@@ -708,6 +736,14 @@ namespace v2rayN.Mode
         /// enable
         /// </summary>
         public bool enabled { get; set; } = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string userAgent
+        {
+            get; set;
+        } = string.Empty;
     }
 
     [Serializable]
@@ -721,6 +757,29 @@ namespace v2rayN.Mode
         }
 
         public Dictionary<string, int> mainLvColWidth
+        {
+            get; set;
+        }
+    }
+
+    [Serializable]
+    public class ConstItem
+    {
+        /// <summary>
+        /// 自定义服务器下载测速url
+        /// </summary>
+        public string speedTestUrl
+        {
+            get; set;
+        }
+        /// <summary>
+        /// 自定义“服务器真连接延迟”测试url
+        /// </summary>
+        public string speedPingTestUrl
+        {
+            get; set;
+        }
+        public string defIEProxyExceptions
         {
             get; set;
         }

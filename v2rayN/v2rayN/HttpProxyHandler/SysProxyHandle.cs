@@ -82,6 +82,16 @@ namespace v2rayN.HttpProxyHandler
             ExecSysproxy(arguments);
         }
 
+
+        public static void SetIEProxy(bool global, string strProxy, string strExceptions)
+        {
+            string arguments = global
+                ? $"global {strProxy} {strExceptions}"
+                : $"pac {strProxy}";
+
+            ExecSysproxy(arguments);
+        }
+
         // set system proxy to 1 (null) (null) (null)
         public static bool ResetIEProxy()
         {

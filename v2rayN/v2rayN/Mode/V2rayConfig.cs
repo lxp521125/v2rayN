@@ -25,7 +25,7 @@ namespace v2rayN.Mode
         /// 统计需要， 空对象
         /// </summary>
         public Stats stats { get; set; }
-       
+
         /// </summary>
         public API api { get; set; }
 
@@ -133,14 +133,14 @@ namespace v2rayN.Mode
         /// </summary>
         public List<UsersItem> clients { get; set; }
 
-        
+
         /// <summary>
         /// VLESS
         /// </summary>
         public string decryption { get; set; }
 
         public bool allowTransparent { get; set; }
-      
+
     }
 
     public class UsersItem
@@ -170,7 +170,7 @@ namespace v2rayN.Mode
         /// <summary>
         /// VLESS
         /// </summary>
-        public string flow { get; set; }         
+        public string flow { get; set; }
     }
     public class Sniffing
     {
@@ -272,6 +272,11 @@ namespace v2rayN.Mode
         public int level { get; set; }
 
         /// <summary>
+        /// trojan
+        /// </summary>
+        public string flow { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public List<SocksUsersItem> users { get; set; }
@@ -332,6 +337,10 @@ namespace v2rayN.Mode
         /// <summary>
         /// 
         /// </summary>
+        public string domainMatcher { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public List<RulesItem> rules { get; set; }
     }
 
@@ -377,6 +386,10 @@ namespace v2rayN.Mode
         /// VLESS xtls
         /// </summary>
         public TlsSettings xtlsSettings { get; set; }
+        /// <summary>
+        /// grpc
+        /// </summary>
+        public GrpcSettings grpcSettings { get; set; }
 
     }
 
@@ -391,10 +404,17 @@ namespace v2rayN.Mode
         /// 
         /// </summary>
         public string serverName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<string> alpn
+        {
+            get; set;
+        }
     }
 
     public class TcpSettings
-    {         
+    {
         /// <summary>
         /// 数据包头部伪装设置
         /// </summary>
@@ -458,7 +478,7 @@ namespace v2rayN.Mode
     }
 
     public class WsSettings
-    {      
+    {
         /// <summary>
         /// 
         /// </summary>
@@ -506,6 +526,18 @@ namespace v2rayN.Mode
         /// 
         /// </summary>
         public Header header { get; set; }
+    }
+
+    public class GrpcSettings
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string serviceName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool multiMode { get; set; }
     }
 
 }

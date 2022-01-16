@@ -16,6 +16,10 @@ namespace v2rayN.Handler
         private List<int> _selecteds;
         Action<int, string> _updateFunc;
 
+        public SpeedtestHandler(ref Config config)
+        {
+            _config = config;
+        }
 
         public SpeedtestHandler(ref Config config, ref V2rayHandler v2rayHandler, List<int> selecteds, string actionType, Action<int, string> update)
         {
@@ -97,6 +101,11 @@ namespace v2rayN.Handler
                 string msg = string.Empty;
 
                 pid = _v2rayHandler.LoadV2rayConfigString(_config, _selecteds);
+                if (pid < 0)
+                {
+                    _updateFunc(_selecteds[0], UIRes.I18N("OperationFailed"));
+                    return;
+                }
 
                 //Thread.Sleep(5000);
                 int httpPort = _config.GetLocalPort("speedtest");
@@ -113,7 +122,7 @@ namespace v2rayN.Handler
                         {
                             WebProxy webProxy = new WebProxy(Global.Loopback, httpPort + itemIndex);
                             int responseTime = -1;
-                            string status = GetRealPingTime(_config.speedPingTestUrl, webProxy, out responseTime);
+                            string status = GetRealPingTime(_config.constItem.speedPingTestUrl, webProxy, out responseTime);
                             string output = Utils.IsNullOrEmpty(status) ? FormatOut(responseTime, "ms") : FormatOut(status, "");
                             _updateFunc(itemIndex, output);
                         }
@@ -148,7 +157,7 @@ namespace v2rayN.Handler
                     {
                         WebProxy webProxy = new WebProxy(Global.Loopback, httpPort);
                         int responseTime = -1;
-                        string status = GetRealPingTime(Global.AvailabilityTestUrl, webProxy, out responseTime);
+                        string status = GetRealPingTime(Global.SpeedPingTestUrl, webProxy, out responseTime);
                         bool noError = Utils.IsNullOrEmpty(status);
                         return noError ? responseTime : -1;
                     }
@@ -179,8 +188,13 @@ namespace v2rayN.Handler
             }
 
             pid = _v2rayHandler.LoadV2rayConfigString(_config, _selecteds);
+            if (pid < 0)
+            {
+                _updateFunc(_selecteds[0], UIRes.I18N("OperationFailed"));
+                return;
+            }
 
-            string url = _config.speedTestUrl;
+            string url = _config.constItem.speedTestUrl;
             DownloadHandle downloadHandle2 = new DownloadHandle();
             downloadHandle2.UpdateCompleted += (sender2, args) =>
             {
@@ -216,11 +230,12 @@ namespace v2rayN.Handler
                 int httpPort = _config.GetLocalPort("speedtest");
 
                 WebProxy webProxy = new WebProxy(Global.Loopback, httpPort + itemIndex);
-                var ws = downloadHandle2.DownloadFileAsync(url, webProxy, timeout - 2);
+                var ws = downloadHandle2.DownloadDataAsync(url, webProxy, timeout - 2);
 
                 Thread.Sleep(1000 * timeout);
 
                 ws.CancelAsync();
+                ws.Dispose();
 
                 Thread.Sleep(1000 * 2);
             }

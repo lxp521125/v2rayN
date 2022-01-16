@@ -38,6 +38,7 @@ namespace v2rayN.Forms
 
             txtRemarks.Text = routingItem.remarks ?? string.Empty;
             txtUrl.Text = routingItem.url ?? string.Empty;
+            txtCustomIcon.Text = routingItem.customIcon ?? string.Empty;
 
             InitRoutingsView();
             RefreshRoutingsView();
@@ -57,9 +58,11 @@ namespace v2rayN.Forms
             lvRoutings.Columns.Add("", 30);
             lvRoutings.Columns.Add("outboundTag", 80);
             lvRoutings.Columns.Add("port", 80);
-            lvRoutings.Columns.Add("protocol", 100);
+            lvRoutings.Columns.Add("protocol", 80);
+            lvRoutings.Columns.Add("inboundTag", 80);
             lvRoutings.Columns.Add("domain", 160);
-            lvRoutings.Columns.Add("ip", 160);
+            lvRoutings.Columns.Add("ip", 160); 
+            lvRoutings.Columns.Add("enable", 60);
 
             lvRoutings.EndUpdate();
         }
@@ -77,8 +80,10 @@ namespace v2rayN.Forms
                 Utils.AddSubItem(lvItem, "outboundTag", item.outboundTag);
                 Utils.AddSubItem(lvItem, "port", item.port);
                 Utils.AddSubItem(lvItem, "protocol", Utils.List2String(item.protocol));
+                Utils.AddSubItem(lvItem, "inboundTag", Utils.List2String(item.inboundTag));
                 Utils.AddSubItem(lvItem, "domain", Utils.List2String(item.domain));
                 Utils.AddSubItem(lvItem, "ip", Utils.List2String(item.ip));
+                Utils.AddSubItem(lvItem, "enable", item.enabled.ToString());
 
                 if (lvItem != null) lvRoutings.Items.Add(lvItem);
             }
@@ -89,6 +94,7 @@ namespace v2rayN.Forms
         {
             routingItem.remarks = txtRemarks.Text.Trim();
             routingItem.url = txtUrl.Text.Trim();
+            routingItem.customIcon = txtCustomIcon.Text.Trim();
 
             if (ConfigHandler.AddRoutingItem(ref config, routingItem, EditIndex) == 0)
             {
@@ -103,6 +109,14 @@ namespace v2rayN.Forms
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
+        }
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "PNG|*.png";
+            openFileDialog1.ShowDialog();
+            txtCustomIcon.Text = openFileDialog1.FileName;
+
         }
 
         private void lvRoutings_DoubleClick(object sender, EventArgs e)
@@ -227,7 +241,7 @@ namespace v2rayN.Forms
             if (lst.Count > 0)
             {
                 Utils.SetClipboardData(Utils.ToJson(lst));
-                UI.Show(UIRes.I18N("OperationSuccess"));
+                //UI.Show(UIRes.I18N("OperationSuccess"));
             }
 
         }
@@ -294,7 +308,7 @@ namespace v2rayN.Forms
                 return;
             }
 
-            if (ConfigHandler.AddBatchRoutingRules(ref routingItem, result) == 0)
+            if (AddBatchRoutingRules(ref routingItem, result) == 0)
             {
                 RefreshRoutingsView();
                 UI.Show(UIRes.I18N("OperationSuccess"));
@@ -304,7 +318,7 @@ namespace v2rayN.Forms
         private void menuImportRulesFromClipboard_Click(object sender, EventArgs e)
         {
             string clipboardData = Utils.GetClipboardData();
-            if (ConfigHandler.AddBatchRoutingRules(ref routingItem, clipboardData) == 0)
+            if (AddBatchRoutingRules(ref routingItem, clipboardData) == 0)
             {
                 RefreshRoutingsView();
                 UI.Show(UIRes.I18N("OperationSuccess"));
@@ -320,15 +334,25 @@ namespace v2rayN.Forms
             }
             DownloadHandle downloadHandle = new DownloadHandle();
             string clipboardData = downloadHandle.WebDownloadStringSync(url);
-            if (ConfigHandler.AddBatchRoutingRules(ref routingItem, clipboardData) == 0)
+            if (AddBatchRoutingRules(ref routingItem, clipboardData) == 0)
             {
                 RefreshRoutingsView();
                 UI.Show(UIRes.I18N("OperationSuccess"));
             }
         }
+        private int AddBatchRoutingRules(ref RoutingItem routingItem, string clipboardData)
+        {
+            bool blReplace = false;
+            if (UI.ShowYesNo(UIRes.I18N("AddBatchRoutingRulesYesNo")) == DialogResult.No)
+            {
+                blReplace = true;
+            }
+            return ConfigHandler.AddBatchRoutingRules(ref routingItem, clipboardData, blReplace);
+        }
+
+
 
         #endregion
-
-
+               
     }
 }

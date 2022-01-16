@@ -22,6 +22,7 @@ namespace v2rayN.Forms
 
             cmbdomainStrategy.Text = config.domainStrategy;
             chkenableRoutingAdvanced.Checked = config.enableRoutingAdvanced;
+            cmbdomainMatcher.Text = config.domainMatcher;
 
             if (config.routings == null)
             {
@@ -50,6 +51,8 @@ namespace v2rayN.Forms
         {
             config.domainStrategy = cmbdomainStrategy.Text;
             config.enableRoutingAdvanced = chkenableRoutingAdvanced.Checked;
+            config.domainMatcher = cmbdomainMatcher.Text;
+
             EndBindingLockedData();
 
             if (ConfigHandler.SaveRouting(ref config) == 0)
@@ -144,6 +147,7 @@ namespace v2rayN.Forms
             lvRoutings.Columns.Add(UIRes.I18N("LvAlias"), 200);
             lvRoutings.Columns.Add(UIRes.I18N("LvCount"), 60);
             lvRoutings.Columns.Add(UIRes.I18N("LvUrl"), 240);
+            lvRoutings.Columns.Add(UIRes.I18N("LvCustomIcon"), 240);
 
             lvRoutings.EndUpdate();
         }
@@ -171,6 +175,7 @@ namespace v2rayN.Forms
                 Utils.AddSubItem(lvItem, "remarks", item.remarks);
                 Utils.AddSubItem(lvItem, "count", item.rules.Count.ToString());
                 Utils.AddSubItem(lvItem, "url", item.url);
+                Utils.AddSubItem(lvItem, "customIcon", item.customIcon);
 
                 if (lvItem != null) lvRoutings.Items.Add(lvItem);
             }
@@ -290,10 +295,13 @@ namespace v2rayN.Forms
         private void menuImportBasicRules_Click(object sender, EventArgs e)
         {
             //Extra to bypass the mainland
+            txtProxyDomain.Text = "geosite:google";
             txtDirectDomain.Text = "geosite:cn";
             txtDirectIp.Text = "geoip:private,geoip:cn";
 
             txtBlockDomain.Text = "geosite:category-ads-all";
+
+            UI.Show(UIRes.I18N("OperationSuccess"));
         }
 
         #endregion

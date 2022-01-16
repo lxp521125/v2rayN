@@ -21,6 +21,7 @@ using System.Security.Principal;
 using v2rayN.Base;
 using Newtonsoft.Json.Linq;
 using System.Web;
+using log4net;
 
 namespace v2rayN
 {
@@ -47,8 +48,9 @@ namespace v2rayN
                     result = reader.ReadToEnd();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return result;
         }
@@ -69,8 +71,9 @@ namespace v2rayN
                     result = reader.ReadToEnd();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return result;
         }
@@ -108,8 +111,9 @@ namespace v2rayN
                                            Formatting.Indented,
                                            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return result;
         }
@@ -141,8 +145,9 @@ namespace v2rayN
                 }
                 result = 0;
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 result = -1;
             }
             return result;
@@ -155,8 +160,10 @@ namespace v2rayN
                 JObject obj = JObject.Parse(strJson);
                 return obj;
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
+
                 return null;
             }
         }
@@ -173,6 +180,10 @@ namespace v2rayN
         {
             try
             {
+                if (lst == null)
+                {
+                    return string.Empty;
+                }
                 if (wrap)
                 {
                     return string.Join("," + Environment.NewLine, lst.ToArray());
@@ -182,8 +193,9 @@ namespace v2rayN
                     return string.Join(",", lst.ToArray());
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return string.Empty;
             }
         }
@@ -199,8 +211,9 @@ namespace v2rayN
                 str = str.Replace(Environment.NewLine, "");
                 return new List<string>(str.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return new List<string>();
             }
         }
@@ -265,8 +278,9 @@ namespace v2rayN
             {
                 return Convert.ToInt32(obj);
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return 0;
             }
         }
@@ -277,8 +291,9 @@ namespace v2rayN
             {
                 return (obj == null ? string.Empty : obj.ToString());
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return string.Empty;
             }
         }
@@ -338,37 +353,7 @@ namespace v2rayN
             return $"{string.Format("{0:f1}", result)} {unit}";
         }
 
-        public static void DedupServerList(List<Mode.VmessItem> source, out List<Mode.VmessItem> result, bool keepOlder)
-        {
-            List<Mode.VmessItem> list = new List<Mode.VmessItem>();
-            if (!keepOlder) source.Reverse(); // Remove the early items first
 
-            bool _isAdded(Mode.VmessItem o, Mode.VmessItem n)
-            {
-                return o.configVersion == n.configVersion &&
-                    o.configType == n.configType &&
-                    o.address == n.address &&
-                    o.port == n.port &&
-                    o.id == n.id &&
-                    o.alterId == n.alterId &&
-                    o.security == n.security &&
-                    o.network == n.network &&
-                    o.headerType == n.headerType &&
-                    o.requestHost == n.requestHost &&
-                    o.path == n.path &&
-                    o.streamSecurity == n.streamSecurity;
-                // skip (will remove) different remarks
-            }
-            foreach (Mode.VmessItem item in source)
-            {
-                if (!list.Exists(i => _isAdded(i, item)))
-                {
-                    list.Add(item);
-                }
-            }
-            if (!keepOlder) list.Reverse();
-            result = list;
-        }
 
         public static string UrlEncode(string url)
         {
@@ -395,8 +380,9 @@ namespace v2rayN
                 int var1 = ToInt(oText);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return false;
             }
         }
@@ -487,6 +473,24 @@ namespace v2rayN
             return Regex.IsMatch(input, pattern, RegexOptions.IgnoreCase);
         }
 
+        public static bool IsIpv6(string ip)
+        {
+            IPAddress address;
+            if (IPAddress.TryParse(ip, out address))
+            {
+                switch (address.AddressFamily)
+                {
+                    case AddressFamily.InterNetwork:
+                        return false;
+                    case AddressFamily.InterNetworkV6:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            return false;
+        }
+
         #endregion
 
         #region 开机自动启动
@@ -518,10 +522,11 @@ namespace v2rayN
             try
             {
                 string exePath = GetExePath();
-                RegWriteValue(autoRunRegPath, autoRunName, run ? exePath : "");
+                RegWriteValue(autoRunRegPath, autoRunName, run ? $"\"{exePath}\"" : "");
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
         }
 
@@ -535,13 +540,14 @@ namespace v2rayN
             {
                 string value = RegReadValue(autoRunRegPath, autoRunName, "");
                 string exePath = GetExePath();
-                if (value?.Equals(exePath) == true)
+                if (value?.Equals(exePath) == true || value?.Equals($"\"{exePath}\"") == true)
                 {
                     return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return false;
         }
@@ -590,8 +596,9 @@ namespace v2rayN
                     return value;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             finally
             {
@@ -600,13 +607,13 @@ namespace v2rayN
             return def;
         }
 
-        public static void RegWriteValue(string path, string name, string value)
+        public static void RegWriteValue(string path, string name, object value)
         {
             RegistryKey regKey = null;
             try
             {
                 regKey = Registry.CurrentUser.CreateSubKey(path);
-                if (IsNullOrEmpty(value))
+                if (IsNullOrEmpty(value.ToString()))
                 {
                     regKey?.DeleteValue(name, false);
                 }
@@ -615,14 +622,35 @@ namespace v2rayN
                     regKey?.SetValue(name, value);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             finally
             {
                 regKey?.Close();
             }
         }
+
+        /// <summary>
+        /// 判断.Net Framework的Release是否符合
+        /// (.Net Framework 版本在4.0及以上)
+        /// </summary>
+        /// <param name="release">需要的版本4.6.2=394802;4.8=528040</param>
+        /// <returns></returns>
+        public static bool GetDotNetRelease(int release)
+        {
+            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
+            using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(subkey))
+            {
+                if (ndpKey != null && ndpKey.GetValue("Release") != null)
+                {
+                    return (int)ndpKey.GetValue("Release") >= release ? true : false;
+                }
+                return false;
+            }
+        }
+
         #endregion
 
         #region 测速
@@ -656,8 +684,9 @@ namespace v2rayN
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return -1;
             }
             return roundtripTime;
@@ -679,19 +708,53 @@ namespace v2rayN
                         lstIPAddress.Add(ipa.ToString());
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return lstIPAddress;
         }
 
         public static void SetSecurityProtocol()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3
-                                       | SecurityProtocolType.Tls
-                                       | SecurityProtocolType.Tls11
-                                       | SecurityProtocolType.Tls12;
+            string securityProtocolTls13 = RegReadValue(Global.MyRegPath, Global.MyRegKeySecurityProtocolTls13, "0");
+
+            if (securityProtocolTls13.Equals("1"))
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3
+                                           | SecurityProtocolType.Tls
+                                           | SecurityProtocolType.Tls11
+                                           | SecurityProtocolType.Tls12
+                                           | SecurityProtocolType.Tls13;
+            }
+            else
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3
+                                           | SecurityProtocolType.Tls
+                                           | SecurityProtocolType.Tls11
+                                           | SecurityProtocolType.Tls12;
+            }
             ServicePointManager.DefaultConnectionLimit = 256;
+        }
+
+        public static bool PortInUse(int port)
+        {
+            bool inUse = false;
+
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] ipEndPoints = ipProperties.GetActiveTcpListeners();
+
+            var lstIpEndPoints = new List<IPEndPoint>(IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners());
+
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    inUse = true;
+                    break;
+                }
+            }
+            return inUse;
         }
         #endregion
 
@@ -710,8 +773,9 @@ namespace v2rayN
                         FileVersionInfo.GetVersionInfo(location).FileVersion.ToString(),
                         File.GetLastWriteTime(location).ToString("yyyy/MM/dd"));
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return string.Empty;
             }
         }
@@ -748,14 +812,15 @@ namespace v2rayN
             try
             {
                 IDataObject data = Clipboard.GetDataObject();
-                if (data.GetDataPresent(DataFormats.Text))
+                if (data.GetDataPresent(DataFormats.UnicodeText))
                 {
-                    strData = data.GetData(DataFormats.Text).ToString();
+                    strData = data.GetData(DataFormats.UnicodeText).ToString();
                 }
                 return strData;
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return strData;
         }
@@ -785,8 +850,9 @@ namespace v2rayN
             {
                 return Guid.NewGuid().ToString("D");
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
             }
             return string.Empty;
         }
@@ -804,8 +870,9 @@ namespace v2rayN
                 //WindowsBuiltInRole可以枚举出很多权限，例如系统用户、User、Guest等等
                 return windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator);
             }
-            catch
+            catch (Exception ex)
             {
+                SaveLog(ex.Message, ex);
                 return false;
             }
         }
@@ -813,6 +880,14 @@ namespace v2rayN
         public static void AddSubItem(ListViewItem i, string name, string text)
         {
             i.SubItems.Add(new ListViewItem.ListViewSubItem() { Name = name, Text = text });
+        }
+
+        public static string GetDownloadFileName(string url)
+        {
+            var fileName = System.IO.Path.GetFileName(url);
+            fileName += "_temp";
+
+            return fileName;
         }
         #endregion
 
@@ -852,37 +927,14 @@ namespace v2rayN
 
         public static void SaveLog(string strContent)
         {
-            SaveLog("info", new Exception(strContent));
+            var logger = LogManager.GetLogger("Log1");
+            logger.Info(strContent);
         }
         public static void SaveLog(string strTitle, Exception ex)
         {
-            try
-            {
-                string path = Path.Combine(StartupPath(), "guiLogs");
-                string FilePath = Path.Combine(path, DateTime.Now.ToString("yyyyMMdd") + ".txt");
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                if (!File.Exists(FilePath))
-                {
-                    FileStream FsCreate = new FileStream(FilePath, FileMode.Create);
-                    FsCreate.Close();
-                    FsCreate.Dispose();
-                }
-                FileStream FsWrite = new FileStream(FilePath, FileMode.Append, FileAccess.Write);
-                StreamWriter SwWrite = new StreamWriter(FsWrite);
-
-                string strContent = ex.ToString();
-
-                SwWrite.WriteLine(string.Format("{0}{1}[{2}]{3}", "--------------------------------", strTitle, DateTime.Now.ToString("HH:mm:ss"), "--------------------------------"));
-                SwWrite.Write(strContent);
-                SwWrite.WriteLine(Environment.NewLine);
-                SwWrite.WriteLine(" ");
-                SwWrite.Flush();
-                SwWrite.Close();
-            }
-            catch { }
+            var logger = LogManager.GetLogger("Log2");
+            logger.Debug(strTitle);
+            logger.Debug(ex);
         }
 
         #endregion
@@ -936,7 +988,10 @@ namespace v2rayN
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                SaveLog(ex.Message, ex);
+            }
             return string.Empty;
         }
 

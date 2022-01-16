@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using v2rayN.Mode;
 
 namespace v2rayN.Handler
@@ -189,6 +191,7 @@ namespace v2rayN.Handler
                   && v2rayConfig.routing.rules != null)
                 {
                     v2rayConfig.routing.domainStrategy = config.domainStrategy;
+                    v2rayConfig.routing.domainMatcher = config.domainMatcher;
 
                     if (config.enableRoutingAdvanced)
                     {
@@ -196,7 +199,10 @@ namespace v2rayN.Handler
                         {
                             foreach (var item in config.routings[config.routingIndex].rules)
                             {
-                                routingUserRule(item, ref v2rayConfig);
+                                if (item.enabled)
+                                {
+                                    routingUserRule(item, ref v2rayConfig);
+                                }
                             }
                         }
                     }
@@ -249,8 +255,12 @@ namespace v2rayN.Handler
                     var it = Utils.DeepCopy(rules);
                     it.ip = null;
                     it.type = "field";
-                    for (int k = 0; k < it.domain.Count; k++)
+                    for (int k = it.domain.Count - 1; k >= 0; k--)
                     {
+                        if (it.domain[k].StartsWith("#"))
+                        {
+                            it.domain.RemoveAt(k);
+                        }
                         it.domain[k] = it.domain[k].Replace(Global.RoutingRuleComma, ",");
                     }
                     //if (Utils.IsNullOrEmpty(it.port))
@@ -517,9 +527,26 @@ namespace v2rayN.Handler
                     serversItem.address = config.address();
                     serversItem.port = config.port();
                     serversItem.password = config.id();
+                    serversItem.flow = string.Empty;
 
                     serversItem.ota = false;
                     serversItem.level = 1;
+
+                    //if xtls
+                    if (config.streamSecurity() == Global.StreamSecurityX)
+                    {
+                        if (Utils.IsNullOrEmpty(config.flow()))
+                        {
+                            serversItem.flow = "xtls-rprx-origin";
+                        }
+                        else
+                        {
+                            serversItem.flow = config.flow().Replace("splice", "direct");
+                        }
+
+                        outbound.mux.enabled = false;
+                        outbound.mux.concurrency = -1;
+                    }
 
                     outbound.mux.enabled = false;
                     outbound.mux.concurrency = -1;
@@ -562,7 +589,8 @@ namespace v2rayN.Handler
 
                     TlsSettings tlsSettings = new TlsSettings
                     {
-                        allowInsecure = config.allowInsecure()
+                        allowInsecure = config.allowInsecure(),
+                        alpn = config.alpn()
                     };
                     if (!string.IsNullOrWhiteSpace(sni))
                     {
@@ -582,7 +610,8 @@ namespace v2rayN.Handler
 
                     TlsSettings xtlsSettings = new TlsSettings
                     {
-                        allowInsecure = config.allowInsecure()
+                        allowInsecure = config.allowInsecure(),
+                        alpn = config.alpn()
                     };
                     if (!string.IsNullOrWhiteSpace(sni))
                     {
@@ -701,6 +730,13 @@ namespace v2rayN.Handler
                                 streamSettings.tlsSettings.serverName = config.address();
                             }
                         }
+                        break;
+                    case "grpc":
+                        var grpcSettings = new GrpcSettings();
+
+                        grpcSettings.serviceName = config.path();
+                        grpcSettings.multiMode = (config.headerType() == Global.GrpcmultiMode ? true : false);
+                        streamSettings.grpcSettings = grpcSettings;
                         break;
                     default:
                         //tcp带http伪装
@@ -1384,6 +1420,12 @@ namespace v2rayN.Handler
                     msg = UIRes.I18N("FailedGenDefaultConfiguration");
                     return "";
                 }
+                List<IPEndPoint> lstIpEndPoints = null;
+                try
+                {
+                    lstIpEndPoints = new List<IPEndPoint>(IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners());
+                }
+                catch { }
 
                 log(configCopy, ref v2rayConfig, false);
                 //routing(config, ref v2rayConfig);
@@ -1392,6 +1434,7 @@ namespace v2rayN.Handler
                 v2rayConfig.inbounds.Clear(); // Remove "proxy" service for speedtest, avoiding port conflicts.
 
                 int httpPort = configCopy.GetLocalPort("speedtest");
+
                 foreach (int index in selecteds)
                 {
                     if (configCopy.vmess[index].configType == (int)EConfigType.Custom)
@@ -1400,11 +1443,18 @@ namespace v2rayN.Handler
                     }
 
                     configCopy.index = index;
+                    var port = httpPort + index;
+
+                    //Port In Used
+                    if (lstIpEndPoints != null && lstIpEndPoints.FindIndex(_it => _it.Port == port) >= 0)
+                    {
+                        continue;
+                    }
 
                     Inbounds inbound = new Inbounds
                     {
                         listen = Global.Loopback,
-                        port = httpPort + index,
+                        port = port,
                         protocol = Global.InboundHttp
                     };
                     inbound.tag = Global.InboundHttp + inbound.port.ToString();

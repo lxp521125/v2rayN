@@ -7,7 +7,7 @@ namespace v2rayN
     {
         #region 常量
 
-
+        //public const string DownloadFileName = "v2ray-windows.zip";
         public const string v2rayWebsiteUrl = @"https://www.v2fly.org/";
         public const string AboutUrl = @"https://github.com/2dust/v2rayN";
         public const string UpdateUrl = AboutUrl + @"/releases";
@@ -21,7 +21,6 @@ namespace v2rayN
         /// </summary>
         public const string SpeedTestUrl = @"http://cachefly.cachefly.net/10mb.test";
         public const string SpeedPingTestUrl = @"https://www.google.com/generate_204";
-        public const string AvailabilityTestUrl = @"https://www.google.com/generate_204";
 
         /// <summary>
         /// CustomRoutingListUrl
@@ -177,6 +176,10 @@ namespace v2rayN
         /// </summary>
         public const string MyRegKeyLanguage = "CurrentLanguage";
         /// <summary>
+        /// 
+        /// </summary>
+        public const string MyRegKeySecurityProtocolTls13 = "SecurityProtocolTls13";
+        /// <summary>
         /// Icon
         /// </summary>
         public const string CustomIconName = "v2rayN.ico";
@@ -194,6 +197,10 @@ namespace v2rayN
         public const string RoutingRuleComma = "<COMMA>";
 
         public static readonly IEnumerable<string> ssSecuritys = new HashSet<string> { "aes-256-gcm", "aes-128-gcm", "chacha20-poly1305", "chacha20-ietf-poly1305", "none", "plain" };
+
+        public const string GrpcgunMode = "gun";
+        public const string GrpcmultiMode = "multi";
+        
         #endregion
 
         #region 全局变量
