@@ -197,7 +197,27 @@ namespace v2rayN
         #endregion
 
         #region 全局变量
-
+        /// <summary>
+        /// 使用的额nowV2rayIndex，超过最大，设置为0
+        /// </summary>
+        public static int nowV2rayIndex
+        {
+            get; set;
+        }
+        /// <summary>
+        /// 使用的oldV2rayIndex，超过最大，设置为0
+        /// </summary>
+        public static int oldV2rayIndex
+        {
+            get; set;
+        }
+        /// <summary>
+        /// 全局定时器
+        /// </summary>
+        public static System.Timers.Timer clock
+        {
+            get; set;
+        }
         /// <summary>
         /// 是否需要重启服务V2ray
         /// </summary>

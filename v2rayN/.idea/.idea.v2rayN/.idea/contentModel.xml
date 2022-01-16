@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\linux\native\libgrpc_csharp_ext.x64.so" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\linux\native\libgrpc_csharp_ext.x86.so" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\osx\native\libgrpc_csharp_ext.x64.dylib" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\osx\native\libgrpc_csharp_ext.x86.dylib" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\win\native\grpc_csharp_ext.x64.dll" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\win\native\grpc_csharp_ext.x86.dll" t="Include" />
+    <e p="C:\Users\gaodun\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\gaodun\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_v2rayN.1463599510.00" t="ExcludeRecursive" />
+    <e p="E:\mycode\v2rayN\v2rayN" t="IncludeFlat">
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="v2rayN" t="IncludeRecursive">
+        <e p="app.config" t="Include" />
+        <e p="Base" t="Include">
+          <e p="ListViewFlickerFree.cs" t="Include" />
+          <e p="StringEx.cs" t="Include" />
+          <e p="WebClientEx.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Forms" t="Include">
+          <e p="AddServer2Form.cs" t="Include" />
+          <e p="AddServer2Form.Designer.cs" t="Include" />
+          <e p="AddServer2Form.resx" t="Include" />
+          <e p="AddServer2Form.zh-Hans.resx" t="Include" />
+          <e p="AddServer3Form.cs" t="Include" />
+          <e p="AddServer3Form.Designer.cs" t="Include" />
+          <e p="AddServer3Form.resx" t="Include" />
+          <e p="AddServer3Form.zh-Hans.resx" t="Include" />
+          <e p="AddServer4Form.cs" t="Include" />
+          <e p="AddServer4Form.Designer.cs" t="Include" />
+          <e p="AddServer4Form.resx" t="Include" />
+          <e p="AddServer4Form.zh-Hans.resx" t="Include" />
+          <e p="AddServer5Form.cs" t="Include" />
+          <e p="AddServer5Form.Designer.cs" t="Include" />
+          <e p="AddServer5Form.resx" t="Include" />
+          <e p="AddServer5Form.zh-Hans.resx" t="Include" />
+          <e p="AddServer6Form.cs" t="Include" />
+          <e p="AddServer6Form.Designer.cs" t="Include" />
+          <e p="AddServer6Form.resx" t="Include" />
+          <e p="AddServer6Form.zh-Hans.resx" t="Include" />
+          <e p="AddServerForm.cs" t="Include" />
+          <e p="AddServerForm.Designer.cs" t="Include" />
+          <e p="AddServerForm.resx" t="Include" />
+          <e p="AddServerForm.zh-Hans.resx" t="Include" />
+          <e p="BaseForm.cs" t="Include" />
+          <e p="BaseForm.Designer.cs" t="Include" />
+          <e p="BaseForm.resx" t="Include" />
+          <e p="BaseServerForm.cs" t="Include" />
+          <e p="BaseServerForm.Designer.cs" t="Include" />
+          <e p="BaseServerForm.resx" t="Include" />
+          <e p="MainForm.cs" t="Include" />
+          <e p="MainForm.Designer.cs" t="Include" />
+          <e p="MainForm.resx" t="Include" />
+          <e p="MainForm.zh-Hans.resx" t="Include" />
+          <e p="OptionSettingForm.cs" t="Include" />
+          <e p="OptionSettingForm.Designer.cs" t="Include" />
+          <e p="OptionSettingForm.resx" t="Include" />
+          <e p="OptionSettingForm.zh-Hans.resx" t="Include" />
+          <e p="QRCodeControl.cs" t="Include" />
+          <e p="QRCodeControl.Designer.cs" t="Include" />
+          <e p="QRCodeControl.resx" t="Include" />
+          <e p="QRCodeControl.zh-Hans.resx" t="Include" />
+          <e p="RoutingRuleSettingDetailsForm.cs" t="Include" />
+          <e p="RoutingRuleSettingDetailsForm.Designer.cs" t="Include" />
+          <e p="RoutingRuleSettingDetailsForm.resx" t="Include" />
+          <e p="RoutingRuleSettingDetailsForm.zh-Hans.resx" t="Include" />
+          <e p="RoutingRuleSettingForm.cs" t="Include" />
+          <e p="RoutingRuleSettingForm.Designer.cs" t="Include" />
+          <e p="RoutingRuleSettingForm.resx" t="Include" />
+          <e p="RoutingRuleSettingForm.zh-Hans.resx" t="Include" />
+          <e p="RoutingSettingForm.cs" t="Include" />
+          <e p="RoutingSettingForm.Designer.cs" t="Include" />
+          <e p="RoutingSettingForm.resx" t="Include" />
+          <e p="RoutingSettingForm.zh-Hans.resx" t="Include" />
+          <e p="SubSettingControl.cs" t="Include" />
+          <e p="SubSettingControl.Designer.cs" t="Include" />
+          <e p="SubSettingControl.resx" t="Include" />
+          <e p="SubSettingControl.zh-Hans.resx" t="Include" />
+          <e p="SubSettingForm.cs" t="Include" />
+          <e p="SubSettingForm.Designer.cs" t="Include" />
+          <e p="SubSettingForm.resx" t="Include" />
+          <e p="SubSettingForm.zh-Hans.resx" t="Include" />
+        </e>
+        <e p="Global.cs" t="Include" />
+        <e p="Handler" t="Include">
+          <e p="ConfigHandler.cs" t="Include" />
+          <e p="DownloadHandle.cs" t="Include" />
+          <e p="MainFormHandler.cs" t="Include" />
+          <e p="QRCodeHelper.cs" t="Include" />
+          <e p="ShareHandler.cs" t="Include" />
+          <e p="SpeedtestHandler.cs" t="Include" />
+          <e p="StatisticsHandler.cs" t="Include" />
+          <e p="V2rayConfigHandler.cs" t="Include" />
+          <e p="V2rayHandler.cs" t="Include" />
+        </e>
+        <e p="HttpProxyHandler" t="Include">
+          <e p="HttpProxyHandle.cs" t="Include" />
+          <e p="PrivoxyHandler.cs" t="Include" />
+          <e p="ProxySetting.cs" t="Include" />
+          <e p="SysProxyHandle.cs" t="Include" />
+        </e>
+        <e p="Mode" t="Include">
+          <e p="ComboItem.cs" t="Include" />
+          <e p="Config.cs" t="Include" />
+          <e p="EConfigType.cs" t="Include" />
+          <e p="ECoreType.cs" t="Include" />
+          <e p="EMove.cs" t="Include" />
+          <e p="EServerColName.cs" t="Include" />
+          <e p="ESysProxyType.cs" t="Include" />
+          <e p="RoutingItem.cs" t="Include" />
+          <e p="RulesItem.cs" t="Include" />
+          <e p="ServerStatistics.cs" t="Include" />
+          <e p="SysproxyConfig.cs" t="Include" />
+          <e p="V2rayConfig.cs" t="Include" />
+          <e p="V2rayTcpRequest.cs" t="Include" />
+          <e p="VmessQRCode.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="Statistics.cs" t="Include" />
+            <e p="StatisticsGrpc.cs" t="Include" />
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+        <e p="Protos" t="Include">
+          <e p="Statistics.proto" t="Include" />
+        </e>
+        <e p="Resources" t="Include">
+          <e p="about.png" t="Include" />
+          <e p="checkupdate.png" t="Include" />
+          <e p="help.png" t="Include" />
+          <e p="minimize.png" t="Include" />
+          <e p="notify.png" t="Include" />
+          <e p="option.png" t="Include" />
+          <e p="privoxy.exe.gz" t="Include" />
+          <e p="promotion.png" t="Include" />
+          <e p="restart.png" t="Include" />
+          <e p="server.png" t="Include" />
+          <e p="share.png" t="Include" />
+          <e p="sub.png" t="Include" />
+          <e p="sysproxy.exe.gz" t="Include" />
+          <e p="sysproxy64.exe.gz" t="Include" />
+        </e>
+        <e p="Resx" t="Include">
+          <e p="ResUI.Designer.cs" t="Include" />
+          <e p="ResUI.resx" t="Include" />
+          <e p="ResUI.zh-Hans.Designer.cs" t="Include" />
+          <e p="ResUI.zh-Hans.resx" t="Include" />
+        </e>
+        <e p="Sample" t="Include">
+          <e p="custom_routing_global" t="Include" />
+          <e p="custom_routing_locked" t="Include" />
+          <e p="custom_routing_white" t="Include" />
+          <e p="SampleClientConfig.txt" t="Include" />
+          <e p="SampleHttprequest.txt" t="Include" />
+          <e p="SampleHttpresponse.txt" t="Include" />
+          <e p="SampleServerConfig.txt" t="Include" />
+        </e>
+        <e p="Tool" t="Include">
+          <e p="FileManager.cs" t="Include" />
+          <e p="Job.cs" t="Include" />
+          <e p="QueryableExtension.cs" t="Include" />
+          <e p="UI.cs" t="Include" />
+          <e p="UIRes.cs" t="Include" />
+          <e p="Utils.cs" t="Include" />
+        </e>
+        <e p="v2rayN.csproj" t="IncludeRecursive" />
+        <e p="v2rayN.ico" t="Include" />
+      </e>
+      <e p="v2rayN.sln" t="IncludeFlat" />
+      <e p="v2rayUpgrade" t="IncludeRecursive">
+        <e p="app.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="MainForm.cs" t="Include" />
+        <e p="MainForm.Designer.cs" t="Include" />
+        <e p="MainForm.resx" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+        <e p="v2rayUpgrade.csproj" t="IncludeRecursive" />
+      </e>
+    </e>
+  </component>
+</project>

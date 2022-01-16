@@ -11,6 +11,7 @@ using v2rayN.Tool;
 using System.Diagnostics;
 using System.Drawing;
 using System.Net;
+using System.Timers;
 
 namespace v2rayN.Forms
 {
@@ -483,8 +484,7 @@ namespace v2rayN.Forms
                 LoadV2ray();
             }
         }
-
-
+        
         private void lvServers_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control)
@@ -514,6 +514,9 @@ namespace v2rayN.Forms
                         break;
                     case Keys.T:
                         menuSpeedServer_Click(null, null);
+                        break;
+                    case Keys.X:
+                        click_clock(null,null);
                         break;
                 }
             }
@@ -633,7 +636,28 @@ namespace v2rayN.Forms
 
             Speedtest("realping");
         }
+        private void click_clock(object sender, EventArgs e)
+        {
+            Global.clock = new System.Timers.Timer(10*1000); //实例化Timer类，设置间隔时间为10000毫秒；
+            
+            Global.clock.Elapsed += new System.Timers.ElapsedEventHandler(the_out);//到达时间的时候执行事件；
+            Global.clock.SynchronizingObject = this;
+ 
+            Global.clock.AutoReset = true;//设置是执行一次（false）还是一直执行(true)；
 
+            Global.clock.Enabled = true;//是否执行System.Timers.Timer.Elapsed事件；
+
+        }
+        private void the_out(object source, EventArgs e)
+        {
+            Global.clock.Enabled = false;
+            foreach (ListViewItem item in lvServers.Items)
+            {
+                item.Selected = true;
+            }
+            Speedtest("speedtest");
+        }
+        
         private void menuSpeedServer_Click(object sender, EventArgs e)
         {
             //if (!config.sysAgentEnabled)
@@ -777,6 +801,11 @@ namespace v2rayN.Forms
             }
             if (ConfigHandler.SetDefaultServer(ref config, index) == 0)
             {
+                if (Global.nowV2rayIndex != index || Global.oldV2rayIndex != index)
+                {
+                    Global.nowV2rayIndex = index;
+                    Global.oldV2rayIndex = index;
+                }
                 RefreshServers();
                 LoadV2ray();
             }
@@ -1034,6 +1063,10 @@ namespace v2rayN.Forms
         {
             lvServers.Invoke((MethodInvoker)delegate
             {
+                if (Global.oldV2rayIndex != Global.nowV2rayIndex)
+                {
+                    SetDefaultServer(Global.nowV2rayIndex);
+                }
                 SetTestResult(index, msg);
             });
         }

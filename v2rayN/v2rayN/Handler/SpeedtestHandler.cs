@@ -169,6 +169,7 @@ namespace v2rayN.Handler
 
         private void RunSpeedTest()
         {
+            Global.clock.Enabled = false;
             int testCounter = 0;
             int pid = -1;
 
@@ -183,6 +184,12 @@ namespace v2rayN.Handler
             DownloadHandle downloadHandle2 = new DownloadHandle();
             downloadHandle2.UpdateCompleted += (sender2, args) =>
             {
+                string substring = args.Msg.Substring(1, 4);
+                if (substring[0]>'2' && substring[0]<='9')
+                {
+                    Global.clock.Enabled = true;
+                    Global.nowV2rayIndex = testCounter;
+                }
                 _updateFunc(testCounter, args.Msg);
             };
             downloadHandle2.Error += (sender2, args) =>
@@ -197,8 +204,11 @@ namespace v2rayN.Handler
                 {
                     break;
                 }
-
-                if (_config.vmess[itemIndex].configType == (int)EConfigType.Custom)
+                if (Global.clock.Enabled)
+                {
+                    break;
+                }
+                if (_config.vmess[itemIndex].configType == (int)EConfigType.Custom || itemIndex < Global.oldV2rayIndex)
                 {
                     continue;
                 }
@@ -213,6 +223,11 @@ namespace v2rayN.Handler
                 ws.CancelAsync();
 
                 Thread.Sleep(1000 * 2);
+            }
+            if (!Global.clock.Enabled)
+            {
+                Global.clock.Enabled = true;
+                Global.nowV2rayIndex = 0;
             }
             if (pid > 0) _v2rayHandler.V2rayStopPid(pid);
         }
