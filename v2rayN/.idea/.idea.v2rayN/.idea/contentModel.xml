@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\linux\native\libgrpc_csharp_ext.x64.so" t="Include" />
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\linux\native\libgrpc_csharp_ext.x86.so" t="Include" />
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\osx\native\libgrpc_csharp_ext.x64.dylib" t="Include" />
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\osx\native\libgrpc_csharp_ext.x86.dylib" t="Include" />
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\win\native\grpc_csharp_ext.x64.dll" t="Include" />
-    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.27.0\runtimes\win\native\grpc_csharp_ext.x86.dll" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.42.0\runtimes\linux-x64\native\libgrpc_csharp_ext.x64.so" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.42.0\runtimes\osx-x64\native\libgrpc_csharp_ext.x64.dylib" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.42.0\runtimes\win-x64\native\grpc_csharp_ext.x64.dll" t="Include" />
+    <e p="C:\Users\gaodun\.nuget\packages\grpc.core\2.42.0\runtimes\win-x86\native\grpc_csharp_ext.x86.dll" t="Include" />
     <e p="C:\Users\gaodun\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
     <e p="C:\Users\gaodun\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_v2rayN.1463599510.00" t="ExcludeRecursive" />
     <e p="E:\mycode\v2rayN\v2rayN" t="IncludeFlat">
@@ -54,6 +52,10 @@
           <e p="MainForm.Designer.cs" t="Include" />
           <e p="MainForm.resx" t="Include" />
           <e p="MainForm.zh-Hans.resx" t="Include" />
+          <e p="MsgFilterSetForm.cs" t="Include" />
+          <e p="MsgFilterSetForm.Designer.cs" t="Include" />
+          <e p="MsgFilterSetForm.resx" t="Include" />
+          <e p="MsgFilterSetForm.zh-Hans.resx" t="Include" />
           <e p="OptionSettingForm.cs" t="Include" />
           <e p="OptionSettingForm.Designer.cs" t="Include" />
           <e p="OptionSettingForm.resx" t="Include" />
@@ -74,6 +76,10 @@
           <e p="RoutingSettingForm.Designer.cs" t="Include" />
           <e p="RoutingSettingForm.resx" t="Include" />
           <e p="RoutingSettingForm.zh-Hans.resx" t="Include" />
+          <e p="ServerTransportControl.cs" t="Include" />
+          <e p="ServerTransportControl.Designer.cs" t="Include" />
+          <e p="ServerTransportControl.resx" t="Include" />
+          <e p="ServerTransportControl.zh-Hans.resx" t="Include" />
           <e p="SubSettingControl.cs" t="Include" />
           <e p="SubSettingControl.Designer.cs" t="Include" />
           <e p="SubSettingControl.resx" t="Include" />
@@ -92,6 +98,7 @@
           <e p="ShareHandler.cs" t="Include" />
           <e p="SpeedtestHandler.cs" t="Include" />
           <e p="StatisticsHandler.cs" t="Include" />
+          <e p="UpdateHandle.cs" t="Include" />
           <e p="V2rayConfigHandler.cs" t="Include" />
           <e p="V2rayHandler.cs" t="Include" />
         </e>
@@ -118,9 +125,11 @@
           <e p="VmessQRCode.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
-          <e p="Debug" t="Include">
-            <e p="Statistics.cs" t="Include" />
-            <e p="StatisticsGrpc.cs" t="Include" />
+          <e p="Release" t="Include">
+            <e p="Protos" t="Include">
+              <e p="Statistics.cs" t="Include" />
+              <e p="StatisticsGrpc.cs" t="Include" />
+            </e>
           </e>
         </e>
         <e p="Program.cs" t="Include" />
@@ -157,6 +166,7 @@
           <e p="ResUI.zh-Hans.resx" t="Include" />
         </e>
         <e p="Sample" t="Include">
+          <e p="custom_routing_black" t="Include" />
           <e p="custom_routing_global" t="Include" />
           <e p="custom_routing_locked" t="Include" />
           <e p="custom_routing_white" t="Include" />
@@ -168,6 +178,7 @@
         <e p="Tool" t="Include">
           <e p="FileManager.cs" t="Include" />
           <e p="Job.cs" t="Include" />
+          <e p="Logging.cs" t="Include" />
           <e p="QueryableExtension.cs" t="Include" />
           <e p="UI.cs" t="Include" />
           <e p="UIRes.cs" t="Include" />

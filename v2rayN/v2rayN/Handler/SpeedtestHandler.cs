@@ -199,7 +199,7 @@ namespace v2rayN.Handler
             downloadHandle2.UpdateCompleted += (sender2, args) =>
             {
                 string substring = args.Msg.Substring(1, 4);
-                if (substring[0]>'2' && substring[0]<='9')
+                if (substring[0]>'1' && substring[0]<='9')
                 {
                     Global.clock.Enabled = true;
                     Global.nowV2rayIndex = testCounter;

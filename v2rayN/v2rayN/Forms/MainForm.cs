@@ -678,7 +678,10 @@ namespace v2rayN.Forms
         }
         private void click_clock(object sender, EventArgs e)
         {
-            Global.clock = new System.Timers.Timer(10*1000); //实例化Timer类，设置间隔时间为10000毫秒；
+            if (Global.clock == null)
+            {
+                Global.clock = new System.Timers.Timer(5*60*1000); //实例化Timer类，设置间隔时间为10000毫秒；
+            }
             
             Global.clock.Elapsed += new System.Timers.ElapsedEventHandler(the_out);//到达时间的时候执行事件；
             Global.clock.SynchronizingObject = this;
